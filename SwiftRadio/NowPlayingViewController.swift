@@ -215,6 +215,7 @@ class NowPlayingViewController: UIViewController {
             return
         case .error:
             message = "Error Playing"
+            print("error playing \(state)")
         }
         
         updateLabels(with: message, animate: animate)

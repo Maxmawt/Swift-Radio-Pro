@@ -76,7 +76,9 @@ class StationsViewController: UIViewController {
         
         // Activate audioSession
         do {
-            try AVAudioSession.sharedInstance().setActive(true)
+            let avsession = AVAudioSession.sharedInstance()
+            try avsession.setActive(true)
+            try avsession.setCategory(AVAudioSessionCategoryPlayback)
         } catch {
             if kDebugLog { print("audioSession could not be activated") }
         }

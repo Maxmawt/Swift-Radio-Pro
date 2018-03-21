@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import os
 
 struct DataManager {
     
@@ -15,6 +16,8 @@ struct DataManager {
     //*****************************************************************
     
     static func getStationDataWithSuccess(success: @escaping ((_ metaData: Data?) -> Void)) {
+        
+        print("Voila")
 
         DispatchQueue.global(qos: .userInitiated).async {
             if useLocalStations {
@@ -60,11 +63,12 @@ struct DataManager {
     
     static func loadDataFromURL(url: URL, completion: @escaping (_ data: Data?, _ error: Error?) -> Void) {
         
-        let sessionConfig = URLSessionConfiguration.default
+        let sessionConfig = URLSessionConfiguration.ephemeral
         sessionConfig.allowsCellularAccess = true
         sessionConfig.timeoutIntervalForRequest = 15
         sessionConfig.timeoutIntervalForResource = 30
         sessionConfig.httpMaximumConnectionsPerHost = 1
+        sessionConfig.multipathServiceType = URLSessionConfiguration.MultipathServiceType.handover
         
         let session = URLSession(configuration: sessionConfig)
         
@@ -76,12 +80,14 @@ struct DataManager {
                 if kDebugLog { print("API ERROR: \(error!)") }
                 return
             }
+            print("Error HTTP: \(String(describing: error))")
             
             guard let httpResponse = response as? HTTPURLResponse, 200...299 ~= httpResponse.statusCode else {
                 completion(nil, nil)
-                if kDebugLog { print("API: HTTP status code has unexpected value") }
+                if kDebugLog { print("API: HTTP status code has unexpected value, \(String(describing: response))") }
                 return
             }
+            print("Response HTTP: \(String(describing: response))")
             
             guard let data = data else {
                 completion(nil, nil)
